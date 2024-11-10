@@ -1,16 +1,17 @@
 import { Request, Response, NextFunction } from 'express';
-import knex from '../database/connection'; // Certifique-se de importar a conexão correta
+import knex from '../database/connection';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
-dotenv.config(); // Para carregar as variáveis de ambiente
+dotenv.config(); // Carrega as variáveis de ambiente do arquivo .env
 
+// Função para fazer login do administrador
 export const loginAdmin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { username, password } = req.body;
 
   try {
-    // Verificar se o admin existe
+    // Verifica se o administrador existe no banco de dados
     const admin = await knex('admins').where({ username }).first();
 
     if (!admin) {
@@ -18,7 +19,7 @@ export const loginAdmin = async (req: Request, res: Response, next: NextFunction
       return;
     }
 
-    // Verificar se a senha está correta
+    // Verifica se a senha fornecida corresponde à senha armazenada no banco
     const validPassword = await bcrypt.compare(password, admin.password);
 
     if (!validPassword) {
@@ -26,7 +27,7 @@ export const loginAdmin = async (req: Request, res: Response, next: NextFunction
       return;
     }
 
-    // Gerar um token JWT
+    // Se a autenticação for bem-sucedida, gera um token JWT
     const token = jwt.sign({ id: admin.id }, process.env.JWT_SECRET as string, { expiresIn: '1h' });
 
     // Resposta com uma mensagem de sucesso e o token
@@ -35,6 +36,7 @@ export const loginAdmin = async (req: Request, res: Response, next: NextFunction
       token: token
     });
   } catch (error) {
-    next(error); // Chama o próximo middleware para tratar o erro
+    // Se ocorrer um erro durante o processo, chama o próximo middleware de erro
+    next(error);
   }
 };
