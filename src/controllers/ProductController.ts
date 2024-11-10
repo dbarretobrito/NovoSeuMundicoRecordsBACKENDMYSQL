@@ -11,6 +11,7 @@ import {
 // Método de criação de produto
 export const createProductController = async (req: Request, res: Response): Promise<void> => {
   try {
+    // Extrai os dados do produto da requisição
     const { name, description, price, year, tags, front_image, back_image, detail_image, detail2_image } = req.body;
 
     const product: Product = {
@@ -18,7 +19,7 @@ export const createProductController = async (req: Request, res: Response): Prom
       description,
       price,
       year,
-      tags, // Mantenha como array de strings
+      tags,
       front_image,
       back_image: back_image || null,
       detail_image: detail_image || null,
@@ -28,6 +29,7 @@ export const createProductController = async (req: Request, res: Response): Prom
     // Chama a função para criar o produto
     const productId = await createProduct(product);
 
+    // Retorna a resposta com o ID do produto criado
     res.status(201).json({ id: productId, ...product });
   } catch (error) {
     console.error("Erro ao criar produto:", error);
@@ -54,15 +56,16 @@ export const updateProductController = async (req: Request, res: Response): Prom
       detail2_image: detail2_image || null,
     };
 
-    // Atualizar produto
+    // Chama a função para atualizar o produto no banco
     const updatedRows = await updateProduct(Number(id), product);
 
     if (updatedRows === 0) {
-      res.status(404).json({ message: 'Produto não encontrado' });  // Trata caso em que o ID não existe
-      return; // Adiciona o return aqui
+      // Caso o produto não seja encontrado
+      res.status(404).json({ message: 'Produto não encontrado' });
+      return; // Adiciona o return para evitar continuar após o erro
     }
 
-    // Responder ao cliente
+    // Retorna o produto atualizado
     res.status(200).json({ message: 'Produto atualizado com sucesso', product });
   } catch (error) {
     console.error("Erro ao atualizar produto:", error);
@@ -77,8 +80,10 @@ export const deleteProductController = async (req: Request, res: Response): Prom
   try {
     const result = await deleteProduct(Number(id));
     if (result) {
+      // Caso o produto seja deletado com sucesso
       res.status(200).json({ message: 'Produto deletado com sucesso' });
     } else {
+      // Caso o produto não seja encontrado
       res.status(404).json({ message: 'Produto não encontrado' });
     }
   } catch (error: unknown) {
