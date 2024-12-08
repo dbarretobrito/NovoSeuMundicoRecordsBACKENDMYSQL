@@ -8,7 +8,7 @@ import connection from './database/connection'; // Importando a conexão
 import path from 'path';
 
 // Carrega as variáveis de ambiente do arquivo .env, incluindo PORT e JWT_SECRET
-dotenv.config({ path: path.resolve(__dirname, '../.env') }); // Carrega variáveis de ambiente
+dotenv.config({ path: path.resolve(__dirname, '../.env') }); // Carrega variáveis de ambientee
 
 const app = express();
 const PORT = process.env.PORT || 3333; // Porta de execução do servidor, priorizando a variável de ambiente
